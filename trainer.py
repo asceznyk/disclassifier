@@ -10,7 +10,7 @@ from model import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def train(model, train_loader, test_loader=None):
+def train(model, train_loader, valid_loader=None):
     model.to(device)
 
     def run_epoch(split):
@@ -44,10 +44,10 @@ def train(model, train_loader, test_loader=None):
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
     for e in range(EPOCHS):
         train_loss = run_epoch('train')
-        valid_loss = run_epoch('valid') if test_loader is not None else train_loss
+        valid_loss = run_epoch('valid') if valid_loader is not None else train_loss
 
-    if test_loader is None or test_loss < best_loss:
-        best_loss = test_loss
+    if valid_loss < best_loss:
+        best_loss = valid_loss
         torch.save(model.state_dict(), 'best.bert.classifier')
 
 def calc_acc(model, loader):
