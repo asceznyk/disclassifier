@@ -4,9 +4,7 @@ import pandas as pd
 from dataset import *
 
 xcol, ycol = 'ptitle', 'Category'
-train_df, valid_df = preprocess_split_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol)
-train_loader = create_loader(train_df, xcol, ycol)
-valid_loader = create_loader(valid_df, xcol, ycol, is_train=False)
+train_loader, valid_loader = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol)
 
 print(next(iter(train_loader)))
 print(next(iter(valid_loader)))
