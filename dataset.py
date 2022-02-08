@@ -39,4 +39,4 @@ def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
 
         return DataLoader(dataset, sampler=sampler(dataset), batch_size=BATCH_SIZE)
     
-    return create_loader(train_df), create_loader(valid_df, is_train=0)
+    return create_loader(train_df), create_loader(valid_df, is_train=0), len(y_uniq)

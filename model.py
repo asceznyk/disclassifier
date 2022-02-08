@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+cost = nn.NLLLoss() 
+
 class BertClassifier(nn.Module):
     def __init__(self, bert, n_class, hidden_dim, dropout=0.1):
         super(BertClassifier, self).__init__()
