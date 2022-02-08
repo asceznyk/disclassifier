@@ -15,6 +15,7 @@ def train(model, train_loader, valid_loader=None):
 
     def run_epoch(split):
         is_train = split == 'train'
+        loader = train_loader if is_train else valid_loader
         model.train(is_train)
 
         avg_loss = 0
