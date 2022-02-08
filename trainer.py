@@ -20,7 +20,7 @@ def train(model, train_loader, valid_loader=None):
 
         avg_loss = 0
         per = 0
-        pbar = tqdm(enumerate(loader), total=len(loader))
+        pbar = tqdm(enumerate(loader)
         for step, batch in pbar:  
             batch = [i.to(device) for i in batch]
             seq, mask, labels = batch
@@ -40,16 +40,18 @@ def train(model, train_loader, valid_loader=None):
             pbar.set_description(f"epoch: {e+1}, progress(%): {int(per)}%, loss: {loss.item():.3f}, avg: {avg_loss:.2f}") 
         
         return avg_loss
-    
+
+    best_loss = float('inf')
     cost = torch.nn.NLLLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
+    
     for e in range(EPOCHS):
         train_loss = run_epoch('train')
         valid_loss = run_epoch('valid') if valid_loader is not None else train_loss
 
-    if valid_loss < best_loss:
-        best_loss = valid_loss
-        torch.save(model.state_dict(), 'best.bert.classifier')
+        if valid_loss < best_loss:
+            best_loss = valid_loss
+            torch.save(model.state_dict(), 'best.bert.classifier')
 
 def calc_acc(model, loader):
     model.eval().to(device)
