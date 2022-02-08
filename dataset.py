@@ -12,9 +12,13 @@ from config import *
 
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 
-def preprocess_split_data(df, xcol, ycol, nan_txt='Other', split=0.1):
+def lower_cols(df, xcol, ycol):
     df.columns = df.columns.str.lower()
     xcol, ycol = xcol.lower(), ycol.lower()
+    return df, xcol, ycol
+
+def preprocess_split_data(df, xcol, ycol, nan_txt='Other', split=0.1):
+    df, xcol, ycol = lower_cols(df, xcol, ycol)
     df[xcol] = df[xcol].str.lower()
     df[ycol] = df[ycol].str.lstrip().str.rstrip()
     
@@ -26,6 +30,7 @@ def preprocess_split_data(df, xcol, ycol, nan_txt='Other', split=0.1):
     return train_test_split(df, test_size=split)
 
 def create_loader(df, xcol, ycol, is_train=True):
+    df, xcol, ycol = lower_cols(df, xcol, ycol)
     tokens = tokenizer.batch_encode_plus(
         df[xcol].tolist(),
         max_length=MAX_LENGTH,
