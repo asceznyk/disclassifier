@@ -63,7 +63,7 @@ def calc_acc(model, loader):
             pred = pred.detach().cpu().numpy()
 
         preds.append(np.argmax(pred, axis=1))
-        labels.append(label)
+        labels.append(label.detach().cpu().numpy())
 
-    print(classification_report(labels.detach().cpu().numpy(), np.array(preds), zero_division=0))
+    print(classification_report(np.array(labels), np.array(preds), zero_division=0))
 
