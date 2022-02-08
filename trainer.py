@@ -65,6 +65,5 @@ def calc_acc(model, loader):
         preds.extend([i for i in np.argmax(pred, axis=1)])
         labels.extend([i for i in label.detach().cpu().numpy()])
 
-    print(labels, preds)
     print(classification_report(np.array(labels), np.array(preds), zero_division=0))
 
