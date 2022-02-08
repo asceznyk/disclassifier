@@ -15,6 +15,6 @@ master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), n_class,
 
 print(master)
 
-train(master, train_loader, test_loader)
+train(master, train_loader, valid_loader)
 calc_acc(master, valid_loader)
 
