@@ -10,6 +10,8 @@ from transformers import BertTokenizerFast
 
 from config import *
 
+tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
+
 def preprocess_split_data(df, xcol, ycol, nan_txt='Other', split=0.1):
     df.columns = df.columns.str.lower()
     xcol, ycol = xcol.lower(), ycol.lower()
