@@ -62,8 +62,8 @@ def calc_acc(model, loader):
             pred = model(seq.to(device), mask.to(device)) 
             pred = pred.detach().cpu().numpy()
 
-        preds.append([i for i in np.argmax(pred, axis=1)])
-        labels.append([i for i in label.detach().cpu().numpy()])
+        preds.append(*[i for i in np.argmax(pred, axis=1)])
+        labels.append(*[i for i in label.detach().cpu().numpy()])
 
     print(labels, preds)
     print(classification_report(np.array(labels), np.array(preds), zero_division=0))
