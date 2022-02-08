@@ -20,7 +20,7 @@ def train(model, train_loader, valid_loader=None):
 
         avg_loss = 0
         per = 0
-        pbar = tqdm(enumerate(loader)
+        pbar = tqdm(enumerate(loader))
         for step, batch in pbar:  
             batch = [i.to(device) for i in batch]
             seq, mask, labels = batch
