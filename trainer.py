@@ -43,7 +43,7 @@ def train(model, train_loader, valid_loader=None):
         return avg_loss
 
     best_loss = float('inf')
-    cost = torch.nn.NLLLoss()
+    cost = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
     
     for e in range(EPOCHS):
