@@ -1,1 +1,1 @@
-# Distilling BERT for classification #
+# Distilling BERT for sequence classification #
