@@ -16,7 +16,7 @@ def preprocess_split_data(df, xcol, ycol, nan_txt='Other', split=0.1):
     df[xcol] = df[xcol].str.lower()
     df[ycol] = df[ycol].str.lstrip().str.rstrip()
     
-    df[xcol].fillna(nan_txt, inplace=True)
+    df[ycol].fillna(nan_txt, inplace=True)
 
     y_uniq = np.unique(df[ycol]).tolist()
     df[ycol+'_id'] = df[ycol].apply(lambda x: y_uniq.index(x))
