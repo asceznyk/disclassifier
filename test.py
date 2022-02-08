@@ -8,6 +8,7 @@ train_df, valid_df = preprocess_split_data(pd.read_csv('/kaggle/input/catpreds/t
 train_loader = create_loader(train_df, xcol, ycol)
 valid_loader = create_loader(valid_df, xcol, ycol, is_train=False)
 
-print(train_loader, valid_loader)
+print(next(iter(train_loader)))
+print(next(iter(valid_loader)))
 
 
