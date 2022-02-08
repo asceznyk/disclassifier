@@ -3,6 +3,8 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 
+from sklearn.metrics import classification_report
+
 import torch
 
 from config import *
@@ -20,7 +22,7 @@ def train(model, train_loader, valid_loader=None):
 
         avg_loss = 0
         per = 0
-        pbar = tqdm(enumerate(loader))
+        pbar = tqdm(enumerate(loader), total=len(loader))
         for step, batch in pbar:  
             batch = [i.to(device) for i in batch]
             seq, mask, labels = batch
@@ -30,14 +32,13 @@ def train(model, train_loader, valid_loader=None):
                 preds = model(seq, mask)
                 loss = cost(preds, labels)
                 avg_loss += loss.item() / len(loader)
-                per += (step+1)/(len(loader)*100)
 
             if is_train:
                 loss.backward() 
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0) 
                 optimizer.step()
 
-            pbar.set_description(f"epoch: {e+1}, progress(%): {int(per)}%, loss: {loss.item():.3f}, avg: {avg_loss:.2f}") 
+            pbar.set_description(f"epoch: {e+1}, loss: {loss.item():.3f}, avg: {avg_loss:.2f}") 
         
         return avg_loss
 
