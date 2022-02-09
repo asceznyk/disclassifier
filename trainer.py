@@ -49,7 +49,7 @@ def fit(master, student, train_loader, valid_loader=None, ckpt_path=None):
     else: 
         student = student.to(device)
         master = master.to(device)
-        cost = torch.nn.KLDivLoss()
+        cost = torch.nn.MSELoss()
         mode = 'distil'
 
     best_loss = float('inf') 
