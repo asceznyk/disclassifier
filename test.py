@@ -24,7 +24,7 @@ student_path = 'best.student.classifier'
 master.load_state_dict(torch.load(master_path))
 calc_acc(master, valid_loader)
 
-fit(master, student, train_loader, valid_loader, student_path)
+#fit(master, student, train_loader, valid_loader, student_path)
 student.load_state_dict(torch.load(student_path))
 calc_acc(student, valid_loader)
 
