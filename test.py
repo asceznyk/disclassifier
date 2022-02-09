@@ -9,13 +9,12 @@ from trainer import *
 from transformers import AutoModel, BertConfig
 
 bertconf = BertConfig()
-print(bertconf)
 
 xcol, ycol = 'ptitle', 'Category'
 train_loader, valid_loader, n_class = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol)
  
 master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), n_class, HIDDEN_DIM)
-student = BiGRUClassifier(n_class, BertConfig.vocab_size, master.emb_dim, HIDDEN_DIM)
+student = BiGRUClassifier(n_class, bertconf.vocab_size, master.emb_dim, HIDDEN_DIM)
 master_path = 'best.master.classifier'
 student_path = 'best.student.classifier'
 
