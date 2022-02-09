@@ -9,16 +9,19 @@ from trainer import *
 
 from transformers import AutoModel
 
-def main(args):
+def main(args): 
     is_train, xcol, ycol = args.is_train, args.input_col, args.label_col  
-    student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM) 
     student_path = 'best.student.classifier'
     pcol = 'pred_'+ycol
 
     if is_train:
         train_loader, valid_loader, _, valid_df, labels = split_preprocess_data(pd.read_csv(args.full_csv), xcol, ycol) 
 
+        N_CLASS = len(labels)
+
         master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), N_CLASS, HIDDEN_DIM)
+
+        student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM) 
 
         master_path = 'best.master.classifier'
 
@@ -36,12 +39,14 @@ def main(args):
         with open('labels.txt', 'w') as f:
             for l in labels:
                 f.write('%s\n' % l)
-    else: 
-        test_df = pd.read_csv(args.full_csv)
+    else:
         labels = []
         with open('labels.txt', 'r') as f:
-            for l in f: labels.append(l.replace('\n', ''))
+            for l in f: labels.append(l.replace('\n', '')) 
+        
+        N_CLASS = len(labels)
 
+        test_df = pd.read_csv(args.full_csv) 
         student.load_state_dict(torch.load(student_path))
         pred_df = predict(student, student_path, test_df, labels, xcol, pcol)
         pred_df.to_csv('test_preds.csv', index=False)
