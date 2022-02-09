@@ -46,6 +46,8 @@ def main(args):
         
         N_CLASS = len(labels)
 
+        student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM)
+
         test_df = pd.read_csv(args.full_csv) 
         student.load_state_dict(torch.load(student_path))
         pred_df = predict(student, student_path, test_df, labels, xcol, pcol)
