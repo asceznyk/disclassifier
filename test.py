@@ -18,7 +18,7 @@ student = BiGRUClassifier(n_class, bertconf.vocab_size, master.emb_dim, HIDDEN_D
 master_path = 'best.master.classifier'
 student_path = 'best.student.classifier'
 
-fit(master, None, train_loader, valid_loader, master_path)
+#fit(master, None, train_loader, valid_loader, master_path)
 master.load_state_dict(torch.load(master_path))
 calc_acc(master, valid_loader)
 
