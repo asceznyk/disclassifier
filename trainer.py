@@ -43,10 +43,12 @@ def fit(master, student, train_loader, valid_loader=None, ckpt_path=None):
         return avg_loss
 
     if student is None:
-        student = master
+        student = master.to(device)
         cost = torch.nn.CrossEntropyLoss()
         mode = 'finetune'
-    else:  
+    else: 
+        student = student.to(device)
+        master = master.to(device)
         cost = torch.nn.KLDivLoss()
         mode = 'distil'
 
