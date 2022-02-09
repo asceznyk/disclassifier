@@ -45,7 +45,7 @@ def train(model, train_loader, valid_loader=None):
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
     
     for e in range(EPOCHS):
-        train_loss = run_epoch(model, train_loader, cost, optimizer 'train')
+        train_loss = run_epoch(model, train_loader, cost, optimizer, 'train')
         valid_loss = run_epoch(model, valid_loader, cost, optimizer, 'valid') 
 
         if valid_loss < best_loss:
