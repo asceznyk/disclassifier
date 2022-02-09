@@ -39,4 +39,21 @@ def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
 
         return DataLoader(dataset, sampler=sampler(dataset), batch_size=BATCH_SIZE)
     
-    return create_loader(train_df), create_loader(valid_df, is_train=0), len(y_uniq)
+    return create_loader(train_df), create_loader(valid_df, is_train=0), y_uniq
+
+def predict(model, ckpt_path, test_df, labels, all_cols, n_samples=20):  
+    sampled_df = test_df.sample(n_samples)
+
+    model.load_state_dict(torch.load(cat_ckpt))
+    model = model.cpu()
+
+    [text_col, label_col, pred_col] = all_cols
+
+    sent_enc = tokenizer.batch_encode_plus(sampled_df[text_col].tolist(), padding=True)
+    seq, mask = torch.tensor(sent_enc['input_ids']), torch.tensor(sent_enc['attention_mask']) 
+    preds = np.argmax(model(seq.cpu(), mask.cpu()).detach().cpu().numpy(), axis=1)    
+    sampled_df[pred_col] = [labels[p] for p in preds.tolist()]
+
+    return sampled_df[all_cols]
+
+
