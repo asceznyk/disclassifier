@@ -1,14 +1,15 @@
 import torch
 import torch.nn as nn
 
+from config import *
+
 class BertClassifier(nn.Module):
     def __init__(self, bert, n_class, hidden_dim, dropout=0.1):
         super(BertClassifier, self).__init__()
-        self.emb_dim = bert.embeddings.word_embeddings.weight.size()[1]
         self.bert = bert
         self.dropout = nn.Dropout(dropout)  
         self.relu = nn.ReLU()
-        self.fc1 = nn.Linear(self.emb_dim, hidden_dim)
+        self.fc1 = nn.Linear(EMB_DIM, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, n_class)
 
     def forward(self, seq, mask):
