@@ -29,5 +29,5 @@ student.load_state_dict(torch.load(student_path))
 calc_acc(student, valid_loader)
 
 pred_df = predict(student, student_path, valid_df, labels, [xcol, ycol, 'pred_'+ycol])
-print(pred_df)
+pred_df.to_csv('preds_labels.csv')
 
