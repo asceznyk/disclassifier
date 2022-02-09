@@ -11,7 +11,7 @@ from transformers import AutoModel, BertConfig
 bertconf = BertConfig()
 
 xcol, ycol = 'ptitle', 'Category'
-train_loader, valid_loader, labels = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol)
+train_loader, valid_loader, train_df, valid_df, labels = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol)
 
 n_class = len(labels)
 

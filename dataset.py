@@ -39,7 +39,7 @@ def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
 
         return DataLoader(dataset, sampler=sampler(dataset), batch_size=BATCH_SIZE)
     
-    return create_loader(train_df), create_loader(valid_df, is_train=0), y_uniq
+    return create_loader(train_df), create_loader(valid_df, is_train=0), train_df, valid_df, y_uniq
 
 def predict(model, ckpt_path, test_df, labels, all_cols, n_samples=20):  
     sampled_df = test_df.sample(n_samples)
