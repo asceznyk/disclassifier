@@ -14,8 +14,7 @@ class BertClassifier(nn.Module):
     def forward(self, seq, mask):
         out = self.bert(seq, attention_mask=mask) 
         x = self.fc1(out['pooler_output']) 
-        x = self.relu(x)
-        
+        x = self.relu(x)        
         return self.fc2(x)
 
 class BiGRUClassifier(nn.Module):
@@ -35,7 +34,6 @@ class BiGRUClassifier(nn.Module):
         out, _ = self.gru(emb.transpose(0,1)) ## time, batch, dim
         x = self.fc1(out[-1,:,:]) ## taking the last time-step as input
         x = self.relu(x)
-
         return self.fc2(x)
 
 
