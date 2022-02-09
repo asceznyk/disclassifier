@@ -13,7 +13,7 @@ bertconf = BertConfig()
 xcol, ycol = 'ptitle', 'Category'
 train_loader, valid_loader, labels = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol)
 
-n_class = labels
+n_class = len(labels)
 
 master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), n_class, HIDDEN_DIM)
 student = BiGRUClassifier(n_class, bertconf.vocab_size, master.emb_dim, HIDDEN_DIM)
