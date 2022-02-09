@@ -28,4 +28,6 @@ calc_acc(master, valid_loader)
 student.load_state_dict(torch.load(student_path))
 calc_acc(student, valid_loader)
 
-predict(student, student_path, valid_df, labels, [xcol, ycol, 'pred_'+ycol])
+pred_df = predict(student, student_path, valid_df, labels, [xcol, ycol, 'pred_'+ycol])
+print(pred_df)
+
