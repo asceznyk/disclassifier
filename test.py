@@ -8,6 +8,9 @@ from trainer import *
 
 from transformers import AutoModel, BertConfig
 
+bertconf = BertConfig()
+print(bertconf)
+
 xcol, ycol = 'ptitle', 'Category'
 train_loader, valid_loader, n_class = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol)
  
