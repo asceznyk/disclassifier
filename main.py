@@ -31,12 +31,12 @@ def main(args):
         calc_acc(student, valid_loader)
 
         pred_df = predict(student, student_path, valid_df, labels, [xcol, ycol, pcol])
-        pred_df.to_csv('valid_preds.csv')
+        pred_df.to_csv('valid_preds.csv', index=False)
     else:
         test_df = pd.read_csv(args.test_csv)
         student.load_state_dict(torch.load(student_path))
         pred_df = predict(student, student_path, test_df, labels, [xcol, pcol])
-        pred_df.to_csv('test_preds.csv')
+        pred_df.to_csv('test_preds.csv', index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
