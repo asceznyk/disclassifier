@@ -29,7 +29,7 @@ class BiGRUClassifier(nn.Module):
         self.fc1 = nn.Linear(hidden_dim*2, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, n_class)
 
-    def forward(self, seq):
+    def forward(self, seq, mask=None):
         emb = self.embedding(seq)
         out, _ = self.gru(emb.transpose(0,1)) ## time, batch, dim
         x = self.fc1(out[-1,:,:]) ## taking the last time-step as input
