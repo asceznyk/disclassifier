@@ -15,14 +15,14 @@ train_loader, valid_loader, train_df, valid_df, labels = split_preprocess_data(p
 
 n_class = len(labels)
 
-master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), n_class, HIDDEN_DIM)
+#master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), n_class, HIDDEN_DIM)
 student = BiGRUClassifier(n_class, bertconf.vocab_size, master.emb_dim, HIDDEN_DIM)
-master_path = 'best.master.classifier'
+#master_path = 'best.master.classifier'
 student_path = 'best.student.classifier'
 
 #fit(master, None, train_loader, valid_loader, master_path)
-master.load_state_dict(torch.load(master_path))
-calc_acc(master, valid_loader)
+#master.load_state_dict(torch.load(master_path))
+#calc_acc(master, valid_loader)
 
 #fit(master, student, train_loader, valid_loader, student_path)
 student.load_state_dict(torch.load(student_path))
