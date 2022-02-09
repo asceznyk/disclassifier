@@ -40,7 +40,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--is_train', type=bool, default=True, help='train mode and test')
+    parser.add_argument('--is_train', type=int, default=1, help='train mode and test')
     parser.add_argument('--train_csv', type=str, help='train csv file with labels')
     parser.add_argument('--test_csv', type=str, help='test csv with inputs')
     parser.add_argument('--input_col', type=str, help='inputs to the seq classifier')
