@@ -73,8 +73,8 @@ def predict_logits(model, df, xcol):
         with torch.no_grad():
             pred = model(seq.to(device), mask.to(device))
             pred = pred.detach().cpu().numpy().tolist()
-            logits_df.append(df.loc[i, xcol])
-            logits_df.append(pred)
+            logits_df[xcol].append(df.loc[i, xcol])
+            logits_df['logits'].append(pred)
 
     print(logits_df)
 
