@@ -59,11 +59,11 @@ def build_pos_dict(df, xcol):
     nlp = spacy.load("en_core_web_sm")
     def org_pos(input_sentence):
         doc = nlp(input_sentence)
-        for word in doc:
-            pos = word.pos_
-            text = word.text.lower()
-            if pos is not in pos_dict: pos_dict[pos] = word
-            if word not in pos_dict[pos]: pos_dict[pos].append(word)
+        for token in doc:
+            pos = token.pos_
+            text = token.text.lower()
+            if pos not in pos_dict: pos_dict[pos] = [text]
+            if text not in pos_dict[pos]: pos_dict[pos].append(text)
     
     df[xcol].apply(org_pos)
     return pos_dict
