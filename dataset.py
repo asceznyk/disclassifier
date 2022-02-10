@@ -71,7 +71,7 @@ def build_pos_dict(df, xcol):
 def augment_sentences(df, xcol, pos_dict):
     new_df = {}
     mask_token = '[MASK]'
-    def make_sample(input_sentence, pos_dict, p_mask=0.1, p_pos=0.1, p_ng=0.25, max_ng=5):
+    def make_sample(input_sentence, p_mask=0.1, p_pos=0.1, p_ng=0.25, max_ng=5):
         sentence = []
         for word in input_sentence.split(' '):
             u = np.random.uniform()
@@ -93,8 +93,7 @@ def augment_sentences(df, xcol, pos_dict):
         if input_sentence != sentence: new_df[xcol].append(sentence)
         new_df[xcol].append(input_sentence)
 
-    df[xcol].apply(make_sample, args=(pos_dict))
-    
+    df[xcol].apply(make_sample) 
     return pd.DataFrame(new_df, columns=[xcol])
 
 def calc_acc(model, loader):
