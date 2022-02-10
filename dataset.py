@@ -15,6 +15,7 @@ from transformers import BertTokenizerFast
 
 from config import *
 
+nlp = spacy.load("en_core_web_sm")
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 
 def create_loader(df, xcol, yid=None, randomize=1, bsize=BATCH_SIZE):
@@ -56,10 +57,8 @@ def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
 
 def build_pos_dict(df, xcol):
     pos_dict = {}
-    nlp = spacy.load("en_core_web_sm")
     def org_pos(input_sentence):
-        doc = nlp(input_sentence)
-        for token in doc:
+        for token in nlp(input_sentence):
             pos = token.pos_
             text = token.text.lower()
             if pos not in pos_dict: pos_dict[pos] = [text]
@@ -73,15 +72,15 @@ def augment_sentences(df, xcol, pos_dict):
     mask_token = '[MASK]'
     def make_sample(input_sentence, p_mask=0.1, p_pos=0.1, p_ng=0.25, max_ng=5):
         sentence = []
-        for word in input_sentence.split(' '):
+        for token in nlp(input_sentence):
             u = np.random.uniform()
             if u < p_mask:
                 sentence.append(mask_token)
             elif u < (p_mask + p_pos):
-                same_pos = pos_dict[word.pos]
+                same_pos = pos_dict[token.pos_]
                 sentence.append(np.random.choice(same_pos))
             else:
-                sentence.append(word.lower())
+                sentence.append(token.text.lower())
 
         if len(sentence) > 2 and np.random.uniform() < p_ng:
             n = min(np.random.choice(range(1, 5+1)), len(sentence) - 1)
