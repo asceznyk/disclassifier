@@ -44,6 +44,8 @@ def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy
             pbar.set_description(f"epoch: {e+1}, loss: {loss.item():.3f}, avg: {avg_loss:.2f}")     
         return avg_loss
 
+    model.to(device)
+
     if cost_fn == 'entropy':
         cost = nn.CrossEntropyLoss()
     elif cost_fn == 'mse': 
