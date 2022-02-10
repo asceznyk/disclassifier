@@ -25,8 +25,9 @@ def main():
     master_path = 'best.master.classifier'
     #student_path = 'best.student.classifier'
 
-    fit(master, train_loader, valid_loader, master_path)
+    #fit(master, train_loader, valid_loader, master_path)
     master.load_state_dict(torch.load(master_path))
+
     calc_acc(master, valid_loader)
     predict_logits(master, train_df, xcol)
 
