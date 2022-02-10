@@ -6,6 +6,8 @@ import pandas as pd
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 
+import spacy
+
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 
@@ -51,6 +53,48 @@ def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
     train_loader, valid_loader = create_loader(train_df, xcol, yid), create_loader(valid_df, xcol, yid, randomize=0)
     
     return train_loader, valid_loader, train_df, valid_df, y_uniq
+
+def build_pos_dict(df, xcol):
+    pos_dict = {}
+    nlp = spacy.load("en_core_web_sm")
+    def org_pos(input_sentence):
+        doc = nlp(input_sentence)
+        for word in doc:
+            pos = word.pos_
+            text = word.text.lower()
+            if pos is not in pos_dict: pos_dict[pos] = word
+            if word not in pos_dict[pos]: pos_dict[pos].append(word)
+    
+    df[xcol].apply(org_pos)
+    return pos_dict
+
+def augment_sentences(df, xcol, pos_dict):
+    new_df = {}
+    def make_sample(input_sentence, pos_dict, p_mask=0.1, p_pos=0.1, p_ng=0.25, max_ng=5):
+        sentence = []
+        for word in input_sentence.split(' '):
+            u = np.random.uniform()
+            if u < p_mask:
+                sentence.append(mask_token)
+            elif u < (p_mask + p_pos):
+                same_pos = pos_dict[word.pos]
+                sentence.append(np.random.choice(same_pos))
+            else:
+                sentence.append(word.text.lower())
+
+        if len(sentence) > 2 and np.random.uniform() < p_ng:
+            n = min(np.random.choice(range(1, 5+1)), len(sentence) - 1)
+            start = np.random.choice(len(sentence) - n)
+            for idx in range(start, start + n):
+                sentence[idx] = mask_token
+
+        sentence = ' '.join(sentence)
+        if input_sentence != sentence: new_df[xcol].append(sentence)
+        new_df[xcol].append(input_sentence)
+
+    df[xcol].apply(make_sample, args=(pos_dict))
+    
+    return pd.DataFrame(new_df, columns=[xcol])
 
 def calc_acc(model, loader):
     model.eval().to(device)
