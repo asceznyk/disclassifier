@@ -3,8 +3,6 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 
-from sklearn.metrics import classification_report
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
