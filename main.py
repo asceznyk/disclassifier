@@ -25,11 +25,11 @@ def main(args):
 
         master_path = 'best.master.classifier'
 
-        fit(master, None, train_loader, valid_loader, master_path)
+        fit(master, train_loader, valid_loader, master_path)
         master.load_state_dict(torch.load(master_path))
         calc_acc(master, valid_loader)
 
-        fit(master, student, train_loader, valid_loader, student_path)
+        fit(master, train_loader, valid_loader, student_path)
         student.load_state_dict(torch.load(student_path))
         calc_acc(student, valid_loader)
 
