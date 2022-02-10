@@ -28,7 +28,7 @@ def main():
     #fit(master, train_loader, valid_loader, master_path)
     master.load_state_dict(torch.load(master_path))
     calc_acc(master, valid_loader) 
-    pred_df = predict(master, master_path, test_df, labels, xcol, pcol, ycol)
+    pred_df = predict(master, master_path, test_df, labels, xcol, pcol)
     pred_df.to_csv('test_preds.csv', index=False)
 
     #fit(student, train_loader, valid_loader, student_path)
