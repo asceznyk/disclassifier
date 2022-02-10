@@ -29,7 +29,8 @@ def main():
     master.load_state_dict(torch.load(master_path))
 
     calc_acc(master, valid_loader)
-    predict_logits(master, train_df, xcol)
+    logits_df = predict_logits(master, train_df, xcol)
+    print(logits_df)
 
     #fit(student, train_loader, valid_loader, student_path)
     #student.load_state_dict(torch.load(student_path))

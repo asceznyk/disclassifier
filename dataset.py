@@ -74,9 +74,10 @@ def predict_logits(model, df, xcol):
             pred = model(seq.to(device), mask.to(device))
             pred = pred.detach().cpu().numpy().tolist()
             logits_df[xcol].append(df.loc[i, xcol])
-            logits_df['logits'].append(pred)
+            logits_df['logits'].append(pred[0])
 
-    print(logits_df)
+    logits_df = pd.DataFrame(logits_df, columns=[xcol, 'logits'])
+    return logits_df
 
 def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=50):   
     model.load_state_dict(torch.load(ckpt_path))
