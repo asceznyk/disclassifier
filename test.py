@@ -19,15 +19,15 @@ def main():
 
     N_CLASS = len(labels)
 
-    #master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), N_CLASS, HIDDEN_DIM)
-    #student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM) 
+    master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), N_CLASS, HIDDEN_DIM)
+    student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM) 
 
-    #master_path = 'best.master.classifier'
-    #student_path = 'best.student.classifier'
+    master_path = 'best.master.classifier'
+    student_path = 'best.student.classifier'
 
     #fit(master, train_loader, valid_loader, master_path)
     #master.load_state_dict(torch.load(master_path))
-    #calc_acc(master, valid_loader)
+    calc_acc(master, valid_loader)
 
     #fit(student, train_loader, valid_loader, student_path)
     #student.load_state_dict(torch.load(student_path))
