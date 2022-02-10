@@ -81,7 +81,7 @@ def augment_sentences(df, xcol, pos_dict):
                 same_pos = pos_dict[word.pos]
                 sentence.append(np.random.choice(same_pos))
             else:
-                sentence.append(word.text.lower())
+                sentence.append(word.lower())
 
         if len(sentence) > 2 and np.random.uniform() < p_ng:
             n = min(np.random.choice(range(1, 5+1)), len(sentence) - 1)
