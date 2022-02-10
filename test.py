@@ -27,10 +27,11 @@ def main():
 
     #fit(master, train_loader, valid_loader, master_path)
     master.load_state_dict(torch.load(master_path))
-    calc_acc(master, valid_loader)
+    #calc_acc(master, valid_loader)
 
     pos_dict = build_pos_dict(train_df, xcol)
-    aug_df = augment_sentences(train_df, xcol)
+    print(pos_dict)
+    aug_df = augment_sentences(train_df, xcol, pos_dict)
     aug_df.to_csv('aug_set.csv', index=False)
 
     logits_df = predict_logits(master, train_df, xcol)
