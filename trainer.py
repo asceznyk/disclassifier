@@ -15,7 +15,7 @@ from model import *
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy'):  
-    def run_epoch(split, mode):
+    def run_epoch(split):
         is_train = split == 'train' 
         model.train(is_train)
         loader = train_loader if is_train else valid_loader
@@ -54,8 +54,8 @@ def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy
     best_loss = float('inf') 
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE) 
     for e in range(EPOCHS):
-        train_loss = run_epoch('train', mode)
-        valid_loss = run_epoch('valid', mode) if valid_loader is not None else train_loss
+        train_loss = run_epoch('train')
+        valid_loss = run_epoch('valid') if valid_loader is not None else train_loss
 
         if ckpt_path is not None and valid_loss < best_loss:
             best_loss = valid_loss
