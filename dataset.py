@@ -12,7 +12,7 @@ from config import *
 
 tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
 
-def create_loader(df, xcol, yid, is_train=1):
+def create_loader(df, xcol, yid=None, randomize=1, bsize=BATCH_SIZE):
     tokens = tokenizer.batch_encode_plus(
         df[xcol].tolist(),
         max_length=MAX_LENGTH,
@@ -20,10 +20,14 @@ def create_loader(df, xcol, yid, is_train=1):
         truncation=True
     )
 
-    sampler = RandomSampler if is_train else SequentialSampler
-    dataset = TensorDataset(torch.tensor(tokens['input_ids']), torch.tensor(tokens['attention_mask']), torch.tensor(df[yid].tolist())) 
+    sampler = RandomSampler if randomize else SequentialSampler
 
-    return DataLoader(dataset, sampler=sampler(dataset), batch_size=BATCH_SIZE)
+    input_ids = torch.tensor(tokens['input_ids'])
+    attention_mask = torch.tensor(tokens['attention_mask']) 
+
+    dataset = TensorDataset(input_ids, attention_mask, torch.tensor(df[yid].tolist())) if yid is not None else TensorDataset(input_ids, attention_mask) 
+
+    return DataLoader(dataset, sampler=sampler(dataset), batch_size=bsize)
 
 def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
     df.columns = df.columns.str.lower()
@@ -39,17 +43,39 @@ def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
     df[yid] = df[ycol].apply(lambda x: y_uniq.index(x))
 
     train_df, valid_df = train_test_split(df, test_size=split) 
-    train_loader, valid_loader = create_loader(train_df, xcol, yid), create_loader(valid_df, xcol, yid, is_train=0)
+    train_loader, valid_loader = create_loader(train_df, xcol, yid), create_loader(valid_df, xcol, yid, randomize=0)
     
     return train_loader, valid_loader, train_df, valid_df, y_uniq
 
-def predict(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=50):   
+def calc_acc(model, loader):
+    model.eval().to(device)
+    labels, preds = [], []
+    for (seq, mask, label) in loader:
+        with torch.no_grad():
+            pred = model(seq.to(device), mask.to(device)) 
+            pred = pred.detach().cpu().numpy()
+
+        preds.extend([i for i in np.argmax(pred, axis=1)])
+        labels.extend([i for i in label.detach().cpu().numpy()])
+
+    print(classification_report(np.array(labels), np.array(preds), zero_division=0))
+
+def predict_logits(model, df, xcol):
+    model.eval().to(device)
+    loader = create_loader(df, xcol, yid=None, randomize=0, bsize=1)
+    logits_df = {xcol:[], 'logits':[]}
+    for i, (seq, mask) in enumerate(loader):
+        with torch.no_grad():
+            pred = model(seq.to(device), mask.to(device)) 
+            print(pred, df.loc[i, xcol])
+
+def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=50):   
     model.load_state_dict(torch.load(ckpt_path))
-    model = model.cpu()
+    model.eval().cpu()
 
     sampled_df = test_df.sample(n_samples)
     enc = tokenizer.batch_encode_plus(sampled_df[text_col].tolist(), padding=True)
-    seq, mask = torch.tensor(enc['input_ids']), torch.tensor(enc['attention_mask']) 
+    seq, mask = torch.tensor(enc['input_ids'], enc['attention_mask'])
     preds = np.argmax(model(seq.cpu(), mask.cpu()).detach().cpu().numpy(), axis=1)    
     sampled_df[pred_col] = [labels[p] for p in preds.tolist()]
 

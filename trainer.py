@@ -63,16 +63,3 @@ def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy
             best_loss = valid_loss
             torch.save(model.state_dict(), ckpt_path)
 
-def calc_acc(model, loader):
-    model.eval().to(device)
-    labels, preds = [], []
-    for (seq, mask, label) in loader:
-        with torch.no_grad():
-            pred = model(seq.to(device), mask.to(device)) 
-            pred = pred.detach().cpu().numpy()
-
-        preds.extend([i for i in np.argmax(pred, axis=1)])
-        labels.extend([i for i in label.detach().cpu().numpy()])
-
-    print(classification_report(np.array(labels), np.array(preds), zero_division=0))
-

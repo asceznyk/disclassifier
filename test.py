@@ -15,19 +15,20 @@ def main():
 
     test_df = pd.read_csv('/kaggle/input/catpreds/test_set.csv')
 
-    train_loader, valid_loader, _, valid_df, labels = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol) 
+    train_loader, valid_loader, train_df, valid_df, labels = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol) 
 
     N_CLASS = len(labels)
 
     master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), N_CLASS, HIDDEN_DIM)
-    student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM) 
+    #student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM) 
 
     master_path = 'best.master.classifier'
-    student_path = 'best.student.classifier'
+    #student_path = 'best.student.classifier'
 
-    #fit(master, train_loader, valid_loader, master_path)
-    #master.load_state_dict(torch.load(master_path))
+    fit(master, train_loader, valid_loader, master_path)
+    master.load_state_dict(torch.load(master_path))
     calc_acc(master, valid_loader)
+    predict_logits(master, train_df, xcol)
 
     #fit(student, train_loader, valid_loader, student_path)
     #student.load_state_dict(torch.load(student_path))
