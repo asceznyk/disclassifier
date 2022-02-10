@@ -70,6 +70,7 @@ def build_pos_dict(df, xcol):
 
 def augment_sentences(df, xcol, pos_dict):
     new_df = {}
+    mask_token = '[MASK]'
     def make_sample(input_sentence, pos_dict, p_mask=0.1, p_pos=0.1, p_ng=0.25, max_ng=5):
         sentence = []
         for word in input_sentence.split(' '):
