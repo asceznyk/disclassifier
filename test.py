@@ -30,7 +30,6 @@ def main():
     #calc_acc(master, valid_loader)
 
     pos_dict = build_pos_dict(train_df, xcol)
-    print(pos_dict)
     aug_df = augment_sentences(train_df, xcol, pos_dict)
     aug_df.to_csv('aug_set.csv', index=False)
 
