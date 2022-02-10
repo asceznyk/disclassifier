@@ -33,7 +33,8 @@ def main():
     aug_df = augment_sentences(train_df, xcol, pos_dict)
     aug_df.to_csv('aug_set.csv', index=False)
 
-    logits_df = predict_logits(master, train_df, xcol)
+    logits_df = predict_logits(master, aug_df, xcol)
+    logits_df.to_csv('aug_logits.csv', index=False)
     #loader = create_loader(logits_df, xcol, 'logits')
     #print(next(iter(loader)))
 
