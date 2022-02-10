@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 import numpy as np
 import pandas as pd
 
@@ -67,10 +69,14 @@ def predict_logits(model, df, xcol):
     model.eval().to(device)
     loader = create_loader(df, xcol, yid=None, randomize=0, bsize=1)
     logits_df = {xcol:[], 'logits':[]}
-    for i, (seq, mask) in enumerate(loader):
+    for i, (seq, mask) in tqdm(enumerate(loader), total=len(loader)):
         with torch.no_grad():
-            pred = model(seq.to(device), mask.to(device)) 
-            print(df.loc[i, xcol], pred)
+            pred = model(seq.to(device), mask.to(device))
+            pred = pred.detach().cpu().numpy().tolist()
+            logits_df.append(df.loc[i, xcol])
+            logits_df.append(pred)
+
+    print(logits_df)
 
 def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=50):   
     model.load_state_dict(torch.load(ckpt_path))
