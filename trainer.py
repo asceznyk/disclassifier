@@ -12,8 +12,6 @@ import torch.nn.functional as F
 from config import *
 from model import *
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
 def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy'):  
     def run_epoch(split):
         is_train = split == 'train' 

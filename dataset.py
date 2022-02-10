@@ -67,7 +67,7 @@ def predict_logits(model, df, xcol):
     for i, (seq, mask) in enumerate(loader):
         with torch.no_grad():
             pred = model(seq.to(device), mask.to(device)) 
-            print(pred, df.loc[i, xcol])
+            print(df.loc[i, xcol], pred)
 
 def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=50):   
     model.load_state_dict(torch.load(ckpt_path))
