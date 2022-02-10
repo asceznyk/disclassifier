@@ -43,7 +43,8 @@ def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
     yid = ycol+'_id'
     df[yid] = df[ycol].apply(lambda x: y_uniq.index(x))
 
-    train_df, valid_df = train_test_split(df, test_size=split) 
+    train_df, valid_df = train_test_split(df, test_size=split)
+    train_df.reset_index(drop=1), valid_df.reset_index(drop=1)
     train_loader, valid_loader = create_loader(train_df, xcol, yid), create_loader(valid_df, xcol, yid, randomize=0)
     
     return train_loader, valid_loader, train_df, valid_df, y_uniq
