@@ -13,6 +13,8 @@ def main():
     xcol, ycol = 'ptitle', 'category'  
     pcol = 'pred_'+ycol
 
+    test_df = pd.read_csv('/kaggle/input/catpreds/test_set.csv')
+
     train_loader, valid_loader, _, valid_df, labels = split_preprocess_data(pd.read_csv('/kaggle/input/catpreds/train_set.csv'), xcol, ycol) 
 
     N_CLASS = len(labels)
@@ -23,9 +25,11 @@ def main():
     master_path = 'best.master.classifier'
     student_path = 'best.student.classifier'
 
-    fit(master, train_loader, valid_loader, master_path)
+    #fit(master, train_loader, valid_loader, master_path)
     master.load_state_dict(torch.load(master_path))
-    calc_acc(master, valid_loader)
+    calc_acc(master, valid_loader) 
+    pred_df = predict(master, master_path, test_df, labels, xcol, pcol, ycol)
+    pred_df.to_csv('test_preds.csv', index=False)
 
     #fit(student, train_loader, valid_loader, student_path)
     #student.load_state_dict(torch.load(student_path))
