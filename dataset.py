@@ -67,14 +67,16 @@ def calc_acc(model, loader):
 
 def predict_logits(model, df, xcol):
     model.eval().to(device)
-    loader = create_loader(df, xcol, yid=None, randomize=0, bsize=1)
+    loader = create_loader(df, xcol, yid=None, randomize=0)
+    bsize = BATCH_SIZE
     logits_df = {xcol:[], 'logits':[]}
     for i, (seq, mask) in tqdm(enumerate(loader), total=len(loader)):
         with torch.no_grad():
             pred = model(seq.to(device), mask.to(device))
             pred = pred.detach().cpu().numpy().tolist()
-            logits_df[xcol].append(df.loc[i, xcol])
-            logits_df['logits'].append(pred[0])
+            print([(i*bsize+k) for k in range(bsize)])
+            logits_df[xcol].extend([df.loc[(i*bsize)+k, xcol] for k in range(bsize)])
+            logits_df['logits'].extend(pred)
 
     logits_df = pd.DataFrame(logits_df, columns=[xcol, 'logits'])
     return logits_df

@@ -30,8 +30,9 @@ def main():
 
     calc_acc(master, valid_loader)
     logits_df = predict_logits(master, train_df, xcol)
-    loader = create_loader(logits_df, xcol, 'logits')
-    print(next(iter(loader)))
+    print(logits_df)
+    #loader = create_loader(logits_df, xcol, 'logits')
+    #print(next(iter(loader)))
 
     #fit(student, train_loader, valid_loader, student_path)
     #student.load_state_dict(torch.load(student_path))
