@@ -9,7 +9,7 @@ from trainer import *
 
 from transformers import AutoModel
 
-def main(args): 
+def main(args):
     xcol, ycol = args.input_col.lower(), args.label_col.lower() 
     pcol = 'pred_'+ycol
     yid = ycol+'_id'
@@ -25,7 +25,7 @@ def main(args):
 
     full_df = pd.read_csv('full_set.csv')
 
-    if is_train:
+    if args.is_train:
         train_df, valid_df = split_data(full_df)
         train_loader, valid_loader = create_loader(train_df, xcol, yid), create_loader(valid_df, xcol, yid, randomize=0)
 
