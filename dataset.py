@@ -115,7 +115,7 @@ def predict_logits(model, df, xcol, lcol):
     logits_df = pd.DataFrame(logits_df, columns=[xcol, 'logits'])
     return logits_df
 
-def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=80):   
+def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=100):   
     model.load_state_dict(torch.load(ckpt_path))
     model = model.eval().to(device)
 
