@@ -32,9 +32,9 @@ def main(args):
         master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), N_CLASS, HIDDEN_DIM) 
         master_path = 'best.master.classifier'
 
-        fit(master, train_loader, valid_loader, master_path)
+        #fit(master, train_loader, valid_loader, master_path)
         master.load_state_dict(torch.load(master_path))
-        calc_acc(master, valid_loader)
+        #calc_acc(master, valid_loader)
 
         pos_dict = build_pos_dict(train_df, xcol)
         aug_df = augment_sentences(train_df, xcol, pos_dict)
@@ -42,7 +42,7 @@ def main(args):
         train_logits, valid_logits = split_data(logits_df)
         train_logits, valid_logits = create_loader(train_logits, xcol, lcol), create_loader(valid_logits, xcol, lcol, randomize=0)
 
-        fit(student, train_logits, valid_logits, student_path)
+        fit(student, train_logits, valid_logits, student_path, cost_fn='mse')
         student.load_state_dict(torch.load(student_path))
         calc_acc(student, valid_loader)
 
