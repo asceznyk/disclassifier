@@ -10,7 +10,9 @@ def main(args):
     labels = np.unique(full_df[ycol]).tolist()
     full_df[ycol+'_id'] = full_df[ycol].apply(lambda x: labels.index(x))
     full_df[[xcol,  ycol, ycol+'_id']].to_csv('full_set.csv', index=False)
-    with open('labels.txt', 'w') as f: for l in labels: f.write('%s\n' % l)
+    with open('labels.txt', 'w') as f: 
+        for l in labels: 
+            f.write('%s\n' % l)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
