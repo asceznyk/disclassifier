@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 import spacy
 
 import torch
+import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 
 from transformers import BertTokenizerFast
@@ -35,25 +36,19 @@ def create_loader(df, xcol, yid=None, randomize=1, bsize=BATCH_SIZE):
 
     return DataLoader(dataset, sampler=sampler(dataset), batch_size=bsize)
 
-def split_preprocess_data(df, xcol, ycol, nan_txt='Other', split=0.1):
-    df.columns = df.columns.str.lower()
-    xcol, ycol = xcol.lower(), ycol.lower()
-
-    df[xcol] = df[xcol].str.lower()
-    df[ycol] = df[ycol].str.lstrip().str.rstrip() 
-    
-    df[ycol].fillna(nan_txt, inplace=True)
-    
-    y_uniq = np.unique(df[ycol]).tolist()
-    yid = ycol+'_id'
-    df[yid] = df[ycol].apply(lambda x: y_uniq.index(x))
-
+def split_data(df, split=0.1):
     train_df, valid_df = train_test_split(df, test_size=split)
     train_df = train_df.reset_index(drop=1)
     valid_df = valid_df.reset_index(drop=1)
-    train_loader, valid_loader = create_loader(train_df, xcol, yid), create_loader(valid_df, xcol, yid, randomize=0)
-    
-    return train_loader, valid_loader, train_df, valid_df, y_uniq
+    return train_df, valid_df
+
+def preprocess_data(df, xcol, ycol, nan_txt='Other'):
+    df.columns = df.columns.str.lower()
+    xcol, ycol = xcol.lower(), ycol.lower()
+    df[xcol] = df[xcol].str.lower()
+    df[ycol] = df[ycol].str.lstrip().str.rstrip()     
+    df[ycol].fillna(nan_txt, inplace=True)  
+    return df
 
 def build_pos_dict(df, xcol):
     pos_dict = {}
@@ -76,9 +71,8 @@ def augment_sentences(df, xcol, pos_dict):
             u = np.random.uniform()
             if u < p_mask:
                 sentence.append(mask_token)
-            elif u < (p_mask + p_pos):
-                same_pos = pos_dict[token.pos_]
-                sentence.append(np.random.choice(same_pos))
+            elif u < (p_mask + p_pos): 
+                sentence.append(np.random.choice(pos_dict[token.pos_]))
             else:
                 sentence.append(token.text.lower())
 
@@ -100,7 +94,7 @@ def calc_acc(model, loader):
     labels, preds = [], []
     for (seq, mask, label) in loader:
         with torch.no_grad():
-            pred = model(seq.to(device), mask.to(device)) 
+            pred = F.softmax(model(seq.to(device), mask.to(device))) 
             pred = pred.detach().cpu().numpy()
 
         preds.extend([i for i in np.argmax(pred, axis=1)])
@@ -108,10 +102,10 @@ def calc_acc(model, loader):
 
     print(classification_report(np.array(labels), np.array(preds), zero_division=0))
 
-def predict_logits(model, df, xcol):
+def predict_logits(model, df, xcol, lcol):
     model.eval().to(device)
     loader = create_loader(df, xcol, yid=None, randomize=0, bsize=1)
-    logits_df = {xcol:[], 'logits':[]}
+    logits_df = {xcol:[], lcol:[]}
     for i, (seq, mask) in tqdm(enumerate(loader), total=len(loader)):
         with torch.no_grad():
             pred = model(seq.to(device), mask.to(device)) 
@@ -128,7 +122,7 @@ def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_
     sampled_df = test_df.sample(n_samples)
     enc = tokenizer.batch_encode_plus(sampled_df[text_col].tolist(), padding=True)
     seq, mask = torch.tensor(enc['input_ids'], enc['attention_mask'])
-    preds = np.argmax(model(seq.cpu(), mask.cpu()).detach().cpu().numpy(), axis=1)    
+    preds = np.argmax(F.softmax(model(seq.cpu(), mask.cpu())).detach().cpu().numpy(), axis=1)    
     sampled_df[pred_col] = [labels[p] for p in preds.tolist()]
 
     full_cols = [text_col, pred_col] if label_col is None else [text_col, label_col, pred_col]
