@@ -121,7 +121,7 @@ def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_
 
     sampled_df = test_df.sample(n_samples)
     enc = tokenizer.batch_encode_plus(sampled_df[text_col].tolist(), padding=True)
-    seq, mask = torch.tensor(enc['input_ids']).to(device), torch.tensor(enc['attention_mask'])).to(device)
+    seq, mask = torch.tensor(enc['input_ids']).to(device), torch.tensor(enc['attention_mask']).to(device)
     preds = np.argmax(F.softmax(model(seq, mask), dim=-1).detach().cpu().numpy(), axis=1)    
     sampled_df[pred_col] = [labels[p] for p in preds.tolist()]
     full_cols = [text_col, pred_col] if label_col is None else [text_col, label_col, pred_col]
