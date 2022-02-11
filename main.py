@@ -23,10 +23,8 @@ def main(args):
     student_path = 'best.student.classifier'
     student = BiGRUClassifier(N_CLASS, VOCAB_SIZE, EMB_DIM, HIDDEN_DIM)
 
-    full_df = pd.read_csv('full_set.csv')
-
     if args.is_train:
-        train_df, valid_df = split_data(full_df)
+        train_df, valid_df = split_data(pd.read_csv(args.full_csv))
         train_loader, valid_loader = create_loader(train_df, xcol, yid), create_loader(valid_df, xcol, yid, randomize=0)
 
         master = BertClassifier(AutoModel.from_pretrained('bert-base-uncased'), N_CLASS, HIDDEN_DIM) 
@@ -50,7 +48,7 @@ def main(args):
         pred_df.to_csv('valid_preds.csv', index=False)
     else:
         student.load_state_dict(torch.load(student_path))
-        pred_df = predict_labels(student, student_path, full_df, labels, xcol, pcol)
+        pred_df = predict_labels(student, student_path, pd.read_csv(args.full_csv), labels, xcol, pcol)
         pred_df.to_csv('test_preds.csv', index=False)
 
 if __name__ == '__main__':
