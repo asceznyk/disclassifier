@@ -9,7 +9,7 @@ def main(args):
     full_df = preprocess_data(pd.read_csv(args.full_csv), xcol, ycol)
     labels = np.unique(full_df[ycol]).tolist()
     full_df[ycol+'_id'] = full_df[ycol].apply(lambda x: labels.index(x))
-    full_df.to_csv('full_set.csv', index=False)
+    full_df[[xcol,  ycol, ycol+'_id']].to_csv('full_set.csv', index=False)
     with open('labels.txt', 'w') as f: for l in labels: f.write('%s\n' % l)
 
 if __name__ == '__main__':
