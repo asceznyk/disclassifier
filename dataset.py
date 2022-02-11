@@ -94,7 +94,7 @@ def calc_acc(model, loader):
     labels, preds = [], []
     for (seq, mask, label) in loader:
         with torch.no_grad():
-            pred = F.softmax(model(seq.to(device), mask.to(device))) 
+            pred = F.softmax(model(seq.to(device), mask.to(device)), dim=-1) 
             pred = pred.detach().cpu().numpy()
 
         preds.extend([i for i in np.argmax(pred, axis=1)])
@@ -117,14 +117,13 @@ def predict_logits(model, df, xcol, lcol):
 
 def predict_labels(model, ckpt_path, test_df, labels, text_col, pred_col, label_col=None, n_samples=50):   
     model.load_state_dict(torch.load(ckpt_path))
-    model.eval().cpu()
+    model = model.eval().to(device)
 
     sampled_df = test_df.sample(n_samples)
     enc = tokenizer.batch_encode_plus(sampled_df[text_col].tolist(), padding=True)
-    seq, mask = torch.tensor(enc['input_ids'], enc['attention_mask'])
-    preds = np.argmax(F.softmax(model(seq.cpu(), mask.cpu())).detach().cpu().numpy(), axis=1)    
+    seq, mask = torch.tensor(enc['input_ids']).to(device), torch.tensor(enc['attention_mask'])).to(device)
+    preds = np.argmax(F.softmax(model(seq, mask), dim=-1).detach().cpu().numpy(), axis=1)    
     sampled_df[pred_col] = [labels[p] for p in preds.tolist()]
-
     full_cols = [text_col, pred_col] if label_col is None else [text_col, label_col, pred_col]
 
     return sampled_df[full_cols]
