@@ -21,13 +21,14 @@ def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy
         for step, batch in pbar: 
             batch = [i.to(device) for i in batch]
             seq, mask, labels = batch
-
-            if cost_fn == 'kldiv':
-                preds =  F.log_softmax(preds, dim=-1)
-                labels = F.softmax(labels, dim=-1)
-
+            
             with torch.set_grad_enabled(is_train):  
                 preds = model(seq, mask)
+
+                if cost_fn == 'kldiv':
+                    preds =  F.log_softmax(preds, dim=-1)
+                    labels = F.softmax(labels, dim=-1)
+
                 loss = cost(preds, labels) 
                 avg_loss += loss.item() / len(loader)
 
