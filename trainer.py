@@ -48,7 +48,7 @@ def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy
     elif cost_fn == 'mse': 
         cost = nn.MSELoss()
     else:
-        cost = nn.KLDivLoss()
+        cost = nn.KLDivLoss(reduction='batchmean')
 
     best_loss = float('inf') 
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE) 
