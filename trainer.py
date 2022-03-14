@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from config import *
 from model import *
 
-def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy'):  
+def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy', epochs=EPOCHS):  
     def run_epoch(split):
         is_train = split == 'train' 
         model.train(is_train)
@@ -52,7 +52,7 @@ def fit(model, train_loader, valid_loader=None, ckpt_path=None, cost_fn='entropy
 
     best_loss = float('inf') 
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE) 
-    for e in range(EPOCHS):
+    for e in range(epochs):
         train_loss = run_epoch('train')
         valid_loss = run_epoch('valid') if valid_loader is not None else train_loss
 

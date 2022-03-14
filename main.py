@@ -40,7 +40,7 @@ def main(args):
         train_logits, valid_logits = split_data(logits_df)
         train_logits, valid_logits = create_loader(train_logits, xcol, lcol), create_loader(valid_logits, xcol, lcol, randomize=0)
 
-        fit(student, train_logits, valid_logits, student_path, cost_fn='mse') ##kldiv
+        fit(student, train_logits, valid_logits, student_path, cost_fn='mse', epochs=100) ##kldiv
         student.load_state_dict(torch.load(student_path))
         calc_acc(student, valid_loader)
 
